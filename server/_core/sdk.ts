@@ -232,6 +232,22 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
+    // Demo mode: bypass authentication and use/create a demo user
+    if (process.env.DEMO_MODE === "true") {
+      let demoUser = await db.getUserByOpenId("demo-open-id");
+      if (!demoUser) {
+        await db.upsertUser({
+          openId: "demo-open-id",
+          name: "Demo User",
+          email: "demo@promofactory.app",
+          loginMethod: "demo",
+          lastSignedIn: new Date(),
+        });
+        demoUser = await db.getUserByOpenId("demo-open-id");
+      }
+      if (demoUser) return demoUser;
+    }
+
     // Regular authentication flow
     const authHeader = req.headers.authorization || req.headers.Authorization;
     let token: string | undefined;
