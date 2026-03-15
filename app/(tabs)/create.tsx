@@ -111,7 +111,7 @@ export default function CreateScreen() {
 
   const handleGenerate = async () => {
     if (!description.trim()) return;
-    if (!canGenerateVideo) {
+    if (!canGenerateContent) {
       Alert.alert("Upgrade Required", "You've reached your monthly generation limit. Upgrade to Pro or Agency for more generations.");
       return;
     }
@@ -155,7 +155,9 @@ export default function CreateScreen() {
     setDescription(template.defaultPrompt);
   };
 
-  const canGenerateVideo = canGenerate(true);
+  // Check if user can generate at all (image gen for free, video for paid)
+  const hasVideoStyle = selectedStyles.includes('video');
+  const canGenerateContent = canGenerate(hasVideoStyle);
 
   return (
     <GradientBackground>
@@ -302,7 +304,7 @@ export default function CreateScreen() {
             <Animated.View style={pulseStyle}>
               <Pressable
                 onPress={handleGenerate}
-                disabled={!description.trim() || !canGenerateVideo}
+                disabled={!description.trim() || !canGenerateContent}
                 style={({ pressed }) => [
                   {
                     opacity: pressed ? 0.9 : !description.trim() ? 0.5 : 1,
