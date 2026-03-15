@@ -54,8 +54,9 @@ async function startServer() {
   );
 
   // Serve Expo web build static files in production
+  // Both expo export and esbuild output to dist/, so __dirname is the web root
   if (process.env.NODE_ENV === "production") {
-    const webBuildPath = path.resolve(__dirname, "..");
+    const webBuildPath = __dirname;
     app.use(express.static(webBuildPath));
 
     // SPA fallback: serve index.html for any non-API route
