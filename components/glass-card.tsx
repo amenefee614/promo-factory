@@ -64,7 +64,7 @@ export function GlassCard({
 
   return (
     <View
-      className={cn('overflow-hidden', className)}
+      className={cn(className)}
       style={[
         glassStyles,
         {

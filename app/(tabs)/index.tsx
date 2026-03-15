@@ -170,7 +170,7 @@ export default function DashboardScreen() {
         >
           <View className="gap-6">
             {/* Welcome Section with Online Status */}
-            <AnimatedCard delay={0} className="gap-3 mt-4 bg-transparent border-0">
+            <AnimatedCard delay={0} className="gap-3 mt-10 bg-transparent border-0">
               <View className="justify-between items-start">
                 <View className="flex-1">
                   <Text
@@ -263,7 +263,7 @@ export default function DashboardScreen() {
                 <View className="flex-row gap-3">
                   <AnimatedCard
                     delay={200}
-                    className="flex-1 p-0 overflow-hidden"
+                    className="flex-1 p-0"
                     neonColor="#EC4899"
                     neonIntensity={0.6}
                   >
@@ -287,7 +287,7 @@ export default function DashboardScreen() {
 
                   <AnimatedCard
                     delay={220}
-                    className="flex-1 p-0 overflow-hidden"
+                    className="flex-1 p-0"
                     neonColor="#34D399"
                     neonIntensity={0.6}
                   >
@@ -312,7 +312,7 @@ export default function DashboardScreen() {
 
                 <AnimatedCard
                   delay={240}
-                  className="p-0 overflow-hidden w-full"
+                  className="p-0 w-full"
                   neonColor="#818CF8"
                   neonIntensity={0.6}
                 >

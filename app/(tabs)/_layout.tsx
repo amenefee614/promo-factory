@@ -6,8 +6,8 @@ import { Platform, View } from "react-native";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
-  const tabBarHeight = 60 + bottomPadding;
+  const bottomPadding = Platform.OS === "web" ? 18 : Math.max(insets.bottom, 14);
+  const tabBarHeight = 68 + bottomPadding;
 
   return (
     <Tabs
