@@ -32,7 +32,7 @@ export function GlassCard({
     high: { borderOpacity: 0.6, glowSpread: 25, glowOpacity: 0.2 },
   };
 
-  const glow = glowIntensityMap[neonIntensity];
+  const glow = glowIntensityMap[neonIntensity] || glowIntensityMap.low;
 
   const glassStyles = Platform.select({
     web: {
