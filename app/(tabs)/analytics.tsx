@@ -203,6 +203,7 @@ export default function AnalyticsScreen() {
     locked = false,
     delay = 0,
     trend,
+    neonColor = "#818CF8",
   }: {
     icon: any;
     label: string;
@@ -211,27 +212,81 @@ export default function AnalyticsScreen() {
     locked?: boolean;
     delay?: number;
     trend?: string;
+    neonColor?: string;
   }) => (
-    <AnimatedCard delay={delay} className="flex-1 p-4">
+    <AnimatedCard
+      delay={delay}
+      className="flex-1 p-4"
+      neonColor={locked ? undefined : neonColor}
+      neonIntensity={locked ? 0 : 0.5}
+    >
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <IconSymbol name={icon} size={22} color={locked ? "#6B7280" : "#818CF8"} />
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: locked ? 'rgba(107, 114, 128, 0.15)' : `${neonColor}20`,
+            borderWidth: 1.5,
+            borderColor: locked ? 'rgba(107, 114, 128, 0.3)' : `${neonColor}40`,
+            ...(Platform.OS === 'web' && !locked && {
+              boxShadow: `0 0 15px ${neonColor}40`,
+            }),
+          }}
+        >
+          <IconSymbol name={icon} size={22} color={locked ? "#6B7280" : neonColor} />
+        </View>
         {locked && (
-          <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: "rgba(251, 191, 36, 0.2)" }}>
-            <Text style={{ fontSize: 10, fontWeight: "600", color: "#FCD34D" }}>Pro</Text>
+          <View
+            style={{
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 8,
+              backgroundColor: "rgba(251, 191, 36, 0.15)",
+              borderWidth: 1,
+              borderColor: "rgba(251, 191, 36, 0.4)",
+            }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: "700", color: "#FCD34D", letterSpacing: 0.3 }}>PRO</Text>
           </View>
         )}
         {trend && !locked && (
-          <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, backgroundColor: "rgba(52, 211, 153, 0.15)" }}>
-            <Text style={{ fontSize: 10, fontWeight: "600", color: "#34D399" }}>{trend}</Text>
+          <View
+            style={{
+              paddingHorizontal: 6,
+              paddingVertical: 3,
+              borderRadius: 8,
+              backgroundColor: "rgba(52, 211, 153, 0.2)",
+              borderWidth: 1,
+              borderColor: "rgba(52, 211, 153, 0.5)",
+              ...(Platform.OS === 'web' && {
+                boxShadow: '0 0 10px rgba(52, 211, 153, 0.3)',
+              }),
+            }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: "700", color: "#34D399", letterSpacing: 0.2 }}>{trend}</Text>
           </View>
         )}
       </View>
-      <Text style={{ fontSize: 24, fontWeight: "700", color: "#F8F9FF", marginBottom: 2 }}>
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: "900",
+          color: locked ? "#6B7280" : "#F8F9FF",
+          marginBottom: 4,
+          letterSpacing: -0.5,
+          ...(Platform.OS === 'web' && !locked && {
+            textShadow: `0 0 15px ${neonColor}60`,
+          }),
+        }}
+      >
         {locked ? "---" : value}
       </Text>
-      <Text style={{ fontSize: 11, color: "#6B7280" }}>{label}</Text>
+      <Text style={{ fontSize: 12, fontWeight: "600", color: "#818CF8", letterSpacing: 0.3 }}>{label.toUpperCase()}</Text>
       {subtitle && !locked && (
-        <Text style={{ fontSize: 11, color: "#34D399", marginTop: 2 }}>{subtitle}</Text>
+        <Text style={{ fontSize: 11, color: "#34D399", marginTop: 3, fontWeight: "600" }}>{subtitle}</Text>
       )}
     </AnimatedCard>
   );
@@ -244,54 +299,80 @@ export default function AnalyticsScreen() {
           contentContainerStyle={{ paddingBottom: 24 }}
         >
           <View style={{ gap: 20 }}>
-            {/* Header */}
-            <AnimatedCard delay={0} className="gap-2 mt-4 bg-transparent border-0">
-              <Text style={{ fontSize: 30, fontWeight: "700", color: "#F8F9FF" }}>Analytics</Text>
-              <Text style={{ fontSize: 15, color: "#A5B4FC" }}>Track your promo performance</Text>
-            </AnimatedCard>
+            {/* Header with neon glow */}
+            <View className="gap-3 mt-4">
+              <Text
+                style={{
+                  fontSize: 38,
+                  fontWeight: "900",
+                  color: "#34D399",
+                  letterSpacing: 2,
+                  ...(Platform.OS === 'web' && {
+                    textShadow: '0 0 30px rgba(52, 211, 153, 0.8), 0 0 60px rgba(52, 211, 153, 0.4)',
+                  }),
+                }}
+              >
+                ANALYTICS
+              </Text>
+              <View
+                style={{
+                  height: 2,
+                  backgroundColor: "#34D399",
+                  width: 100,
+                  borderRadius: 1,
+                  ...(Platform.OS === 'web' && {
+                    boxShadow: '0 0 15px rgba(52, 211, 153, 0.8)',
+                  }),
+                }}
+              />
+              <Text style={{ fontSize: 15, color: "#C7D2FE", fontWeight: "500" }}>Track your promo performance</Text>
+            </View>
 
             {/* Date Range Selector */}
-            <AnimatedCard delay={50} className="p-2">
-              <View style={{ flexDirection: "row", gap: 6 }}>
-                {RANGES.map((r) => (
-                  <Pressable
-                    key={r.value}
-                    onPress={() => setDateRange(r.value)}
-                    style={({ pressed }) => ({
-                      flex: 1,
-                      opacity: pressed ? 0.8 : 1,
-                    })}
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {RANGES.map((r) => (
+                <Pressable
+                  key={r.value}
+                  onPress={() => setDateRange(r.value)}
+                  style={({ pressed }) => ({
+                    flex: 1,
+                    opacity: pressed ? 0.8 : 1,
+                  })}
+                >
+                  <View
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 12,
+                      borderRadius: 12,
+                      alignItems: "center",
+                      backgroundColor:
+                        dateRange === r.value
+                          ? "rgba(129, 140, 248, 0.2)"
+                          : "transparent",
+                      borderWidth: 2,
+                      borderColor:
+                        dateRange === r.value
+                          ? "#818CF8"
+                          : "rgba(129, 140, 248, 0.2)",
+                      ...(Platform.OS === 'web' && dateRange === r.value && {
+                        boxShadow: '0 0 20px rgba(129, 140, 248, 0.5)',
+                      }),
+                    }}
                   >
-                    <View
+                    <Text
                       style={{
-                        paddingVertical: 8,
-                        borderRadius: 12,
-                        alignItems: "center",
-                        backgroundColor:
-                          dateRange === r.value
-                            ? "rgba(129, 140, 248, 0.35)"
-                            : "transparent",
-                        borderWidth: 1,
-                        borderColor:
-                          dateRange === r.value
-                            ? "rgba(129, 140, 248, 0.6)"
-                            : "transparent",
+                        fontSize: 13,
+                        fontWeight: dateRange === r.value ? "700" : "500",
+                        color: dateRange === r.value ? "#F8F9FF" : "#818CF8",
+                        letterSpacing: 0.3,
                       }}
                     >
-                      <Text
-                        style={{
-                          fontSize: 13,
-                          fontWeight: dateRange === r.value ? "700" : "400",
-                          color: dateRange === r.value ? "#F8F9FF" : "#6B7280",
-                        }}
-                      >
-                        {r.label}
-                      </Text>
-                    </View>
-                  </Pressable>
-                ))}
-              </View>
-            </AnimatedCard>
+                      {r.label.toUpperCase()}
+                    </Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
 
             {/* Stats Grid */}
             <View style={{ gap: 12 }}>
@@ -302,6 +383,7 @@ export default function AnalyticsScreen() {
                   value={displayStats.totalViews.toLocaleString()}
                   trend="+23%"
                   delay={100}
+                  neonColor="#818CF8"
                 />
                 <StatCard
                   icon="house.fill"
@@ -310,6 +392,7 @@ export default function AnalyticsScreen() {
                   locked={isBasicAnalytics}
                   trend="+11%"
                   delay={150}
+                  neonColor="#34D399"
                 />
               </View>
               <View style={{ flexDirection: "row", gap: 12 }}>
@@ -319,6 +402,7 @@ export default function AnalyticsScreen() {
                   value={displayStats.totalBookings}
                   locked={isBasicAnalytics}
                   delay={200}
+                  neonColor="#EC4899"
                 />
                 <StatCard
                   icon="arrow.up.right"
@@ -326,90 +410,198 @@ export default function AnalyticsScreen() {
                   value={`${displayStats.ctr.toFixed(1)}%`}
                   locked={isBasicAnalytics}
                   delay={250}
+                  neonColor="#F59E0B"
                 />
               </View>
             </View>
 
             {/* Bar Chart */}
-            <AnimatedCard delay={300} className="p-4">
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 16,
-                }}
-              >
-                <Text style={{ fontSize: 16, fontWeight: "600", color: "#F8F9FF" }}>
-                  Performance Trend
-                </Text>
-                {isBasicAnalytics && (
-                  <Pressable onPress={() => router.push("/upgrade")} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-                    <Text style={{ fontSize: 12, color: "#818CF8" }}>Upgrade →</Text>
-                  </Pressable>
-                )}
-              </View>
-
-              {/* Legend */}
-              <View style={{ flexDirection: "row", gap: 16, marginBottom: 12 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-                  <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: isBasicAnalytics ? "#4B5563" : "#818CF8" }} />
-                  <Text style={{ fontSize: 11, color: isBasicAnalytics ? "#4B5563" : "#A5B4FC" }}>Views</Text>
-                </View>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-                  <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: isBasicAnalytics ? "#374151" : "#34D399" }} />
-                  <Text style={{ fontSize: 11, color: isBasicAnalytics ? "#4B5563" : "#A5B4FC" }}>Visits</Text>
-                </View>
-              </View>
-
-              <View
-                onLayout={(e) => setChartWidth(e.nativeEvent.layout.width - 8)}
-                style={{ position: "relative" }}
-              >
-                <BarChart data={chartData} locked={isBasicAnalytics} width={chartWidth} />
-                {isBasicAnalytics && (
-                  <View
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "rgba(10, 5, 25, 0.55)",
-                      borderRadius: 8,
-                    }}
-                  >
-                    <Text style={{ fontSize: 22 }}>🔒</Text>
-                    <Text style={{ fontSize: 13, color: "#C7D2FE", marginTop: 6, textAlign: "center" }}>
-                      Upgrade to Pro{"\n"}to unlock charts
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </AnimatedCard>
-
-            {/* Assistant Insight */}
-            <AnimatedCard delay={370} strong className="p-5">
-              <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
+            <View
+              style={{
+                borderRadius: 16,
+                overflow: "hidden",
+                backgroundColor: "rgba(15, 23, 42, 0.4)",
+                borderWidth: 1.5,
+                borderColor: "rgba(129, 140, 248, 0.3)",
+                ...(Platform.OS === 'web' && {
+                  boxShadow: '0 0 30px rgba(129, 140, 248, 0.2), inset 0 0 30px rgba(129, 140, 248, 0.05)',
+                }),
+              }}
+            >
+              <View style={{ padding: 16 }}>
                 <View
                   style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 19,
-                    backgroundColor: "rgba(129, 140, 248, 0.2)",
+                    flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 16,
                   }}
                 >
-                  <Text style={{ fontSize: 18 }}>🤖</Text>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "700",
+                      color: "#F8F9FF",
+                      letterSpacing: 0.5,
+                      ...(Platform.OS === 'web' && {
+                        textShadow: '0 0 10px rgba(129, 140, 248, 0.4)',
+                      }),
+                    }}
+                  >
+                    PERFORMANCE TREND
+                  </Text>
+                  {isBasicAnalytics && (
+                    <Pressable onPress={() => router.push("/upgrade")} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+                      <Text style={{ fontSize: 12, fontWeight: "700", color: "#818CF8", letterSpacing: 0.3 }}>UPGRADE →</Text>
+                    </Pressable>
+                  )}
+                </View>
+
+                {/* Legend */}
+                <View style={{ flexDirection: "row", gap: 20, marginBottom: 14 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 2,
+                        backgroundColor: isBasicAnalytics ? "#4B5563" : "#818CF8",
+                        ...(Platform.OS === 'web' && !isBasicAnalytics && {
+                          boxShadow: '0 0 10px rgba(129, 140, 248, 0.6)',
+                        }),
+                      }}
+                    />
+                    <Text style={{ fontSize: 12, fontWeight: "600", color: isBasicAnalytics ? "#6B7280" : "#A5B4FC", letterSpacing: 0.3 }}>
+                      VIEWS
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 2,
+                        backgroundColor: isBasicAnalytics ? "#374151" : "#34D399",
+                        ...(Platform.OS === 'web' && !isBasicAnalytics && {
+                          boxShadow: '0 0 10px rgba(52, 211, 153, 0.6)',
+                        }),
+                      }}
+                    />
+                    <Text style={{ fontSize: 12, fontWeight: "600", color: isBasicAnalytics ? "#6B7280" : "#A5B4FC", letterSpacing: 0.3 }}>
+                      VISITS
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  onLayout={(e) => setChartWidth(e.nativeEvent.layout.width - 8)}
+                  style={{ position: "relative" }}
+                >
+                  <BarChart data={chartData} locked={isBasicAnalytics} width={chartWidth} />
+                  {isBasicAnalytics && (
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "rgba(10, 5, 25, 0.65)",
+                        borderRadius: 8,
+                        backdropFilter: "blur(4px)",
+                        ...(Platform.OS === 'web' && {
+                          boxShadow: 'inset 0 0 30px rgba(236, 72, 153, 0.2)',
+                        }),
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 25,
+                          backgroundColor: "rgba(236, 72, 153, 0.15)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderWidth: 2,
+                          borderColor: "rgba(236, 72, 153, 0.4)",
+                          marginBottom: 10,
+                          ...(Platform.OS === 'web' && {
+                            boxShadow: '0 0 20px rgba(236, 72, 153, 0.3)',
+                          }),
+                        }}
+                      >
+                        <Text style={{ fontSize: 24 }}>🔒</Text>
+                      </View>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "700",
+                          color: "#F8F9FF",
+                          marginBottom: 4,
+                          letterSpacing: 0.3,
+                        }}
+                      >
+                        UPGRADE TO PRO
+                      </Text>
+                      <Text style={{ fontSize: 12, color: "#C7D2FE", textAlign: "center" }}>
+                        Unlock detailed charts
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </View>
+
+            {/* Assistant Insight */}
+            <View
+              style={{
+                borderRadius: 16,
+                overflow: "hidden",
+                backgroundColor: "rgba(15, 23, 42, 0.4)",
+                borderWidth: 1.5,
+                borderColor: "rgba(129, 140, 248, 0.3)",
+                padding: 16,
+                ...(Platform.OS === 'web' && {
+                  boxShadow: '0 0 25px rgba(129, 140, 248, 0.15), inset 0 0 30px rgba(129, 140, 248, 0.05)',
+                }),
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 14 }}>
+                <View
+                  style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: 12,
+                    backgroundColor: "rgba(129, 140, 248, 0.15)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 1.5,
+                    borderColor: "rgba(129, 140, 248, 0.3)",
+                    ...(Platform.OS === 'web' && {
+                      boxShadow: '0 0 15px rgba(129, 140, 248, 0.3)',
+                    }),
+                  }}
+                >
+                  <Text style={{ fontSize: 24 }}>🤖</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 15, fontWeight: "600", color: "#F8F9FF", marginBottom: 6 }}>
-                    Promo Insight
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "700",
+                      color: "#F8F9FF",
+                      marginBottom: 8,
+                      letterSpacing: 0.3,
+                      ...(Platform.OS === 'web' && {
+                        textShadow: '0 0 10px rgba(129, 140, 248, 0.3)',
+                      }),
+                    }}
+                  >
+                    PROMO INSIGHT
                   </Text>
-                  <Text style={{ fontSize: 13, lineHeight: 20, color: "#A5B4FC" }}>
+                  <Text style={{ fontSize: 13, lineHeight: 20, color: "#C7D2FE", fontWeight: "500" }}>
                     {isBasicAnalytics
                       ? "Upgrade to Pro to unlock AI-powered insights about your performance and get personalized recommendations."
                       : `Your promos reached ${displayStats.totalViews.toLocaleString()} people over the last ${dateRange === 365 ? "year" : `${dateRange} days`}. Views are trending up 23%. Try posting more HYPE-style content on Fridays and Saturdays for best engagement.`}
@@ -417,44 +609,79 @@ export default function AnalyticsScreen() {
                   {!isBasicAnalytics && (
                     <Pressable
                       onPress={() => router.push("/(tabs)/assistant")}
-                      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, marginTop: 10 })}
+                      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, marginTop: 12 })}
                     >
-                      <Text style={{ fontSize: 13, color: "#818CF8", fontWeight: "600" }}>
-                        Ask Promo for ideas →
+                      <Text style={{ fontSize: 13, fontWeight: "700", color: "#34D399", letterSpacing: 0.3 }}>
+                        ASK PROMO FOR IDEAS →
                       </Text>
                     </Pressable>
                   )}
                 </View>
               </View>
-            </AnimatedCard>
+            </View>
 
             {/* Upgrade Prompt */}
             {isBasicAnalytics && (
-              <AnimatedCard
-                delay={420}
-                className="p-5"
-                style={{ borderWidth: 2, borderColor: "rgba(129, 140, 248, 0.4)" }}
+              <View
+                style={{
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  backgroundColor: "rgba(15, 23, 42, 0.4)",
+                  borderWidth: 2,
+                  borderColor: "rgba(236, 72, 153, 0.4)",
+                  padding: 16,
+                  ...(Platform.OS === 'web' && {
+                    boxShadow: '0 0 30px rgba(236, 72, 153, 0.25), inset 0 0 30px rgba(236, 72, 153, 0.08)',
+                  }),
+                }}
               >
-                <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
-                  <Text style={{ fontSize: 28 }}>👑</Text>
+                <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 14 }}>
+                  <View
+                    style={{
+                      width: 46,
+                      height: 46,
+                      borderRadius: 12,
+                      backgroundColor: "rgba(236, 72, 153, 0.15)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: 1.5,
+                      borderColor: "rgba(236, 72, 153, 0.3)",
+                      ...(Platform.OS === 'web' && {
+                        boxShadow: '0 0 15px rgba(236, 72, 153, 0.3)',
+                      }),
+                    }}
+                  >
+                    <Text style={{ fontSize: 28 }}>👑</Text>
+                  </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 17, fontWeight: "700", color: "#F8F9FF", marginBottom: 6 }}>
-                      Unlock Advanced Analytics
+                    <Text
+                      style={{
+                        fontSize: 17,
+                        fontWeight: "900",
+                        color: "#F8F9FF",
+                        marginBottom: 8,
+                        letterSpacing: 0.5,
+                        ...(Platform.OS === 'web' && {
+                          textShadow: '0 0 15px rgba(236, 72, 153, 0.4)',
+                        }),
+                      }}
+                    >
+                      UNLOCK ADVANCED
                     </Text>
-                    <Text style={{ fontSize: 13, color: "#C7D2FE", marginBottom: 12 }}>
+                    <Text style={{ fontSize: 13, color: "#C7D2FE", marginBottom: 12, lineHeight: 20, fontWeight: "500" }}>
                       Get detailed metrics, interactive charts, trend analysis, and AI-powered insights.
                     </Text>
                     <Pressable
                       onPress={() => router.push("/upgrade")}
                       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
                     >
-                      <Text style={{ fontSize: 14, fontWeight: "700", color: "#818CF8" }}>
-                        Upgrade to Pro →
+                      <Text style={{ fontSize: 14, fontWeight: "700", color: "#EC4899", letterSpacing: 0.3 }}>
+                        UPGRADE TO PRO →
                       </Text>
                     </Pressable>
                   </View>
                 </View>
-              </AnimatedCard>
+              </View>
             )}
           </View>
         </ScrollView>

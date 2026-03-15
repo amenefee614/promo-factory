@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { View, Text, ScrollView, Pressable, Switch, Alert } from "react-native";
+import { View, Text, ScrollView, Pressable, Switch, Alert, Platform } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { GradientBackground } from "@/components/gradient-background";
 import { AnimatedCard } from "@/components/animated-card";
+import { GlassCard } from "@/components/glass-card";
+import { NeonLiquidButton } from "@/components/neon-liquid-button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { router } from "expo-router";
@@ -20,34 +22,64 @@ interface MenuItemProps {
 }
 
 function MenuItem({ icon, title, subtitle, onPress, showChevron = true, rightElement }: MenuItemProps) {
+  const glassStyle = Platform.OS === "web"
+    ? {
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow: "0 8px 32px rgba(167, 139, 250, 0.08)",
+      }
+    : {};
+
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => ({
-        opacity: pressed ? 0.7 : 1,
+        opacity: pressed ? 0.8 : 1,
       })}
     >
-      <View className="flex-row items-center justify-between py-4 px-6 border-b border-opacity-10" style={{ borderColor: '#6366F1' }}>
-        <View className="flex-row items-center gap-4 flex-1">
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingVertical: 16,
+          paddingHorizontal: 16,
+          marginBottom: 8,
+          borderRadius: 16,
+          backgroundColor: "rgba(99, 102, 241, 0.08)",
+          borderWidth: 1.5,
+          borderColor: "rgba(167, 139, 250, 0.3)",
+          ...glassStyle,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flex: 1 }}>
           <View
-            className="w-10 h-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: 'rgba(99, 102, 241, 0.2)' }}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(167, 139, 250, 0.15)",
+              borderWidth: 1,
+              borderColor: "rgba(167, 139, 250, 0.3)",
+            }}
           >
-            <Text className="text-xl">{icon}</Text>
+            <Text style={{ fontSize: 18 }}>{icon}</Text>
           </View>
-          <View className="flex-1">
-            <Text className="text-base font-semibold" style={{ color: '#F8F9FF' }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#F8F9FF" }}>
               {title}
             </Text>
             {subtitle && (
-              <Text className="text-sm mt-1" style={{ color: '#A5B4FC' }}>
+              <Text style={{ fontSize: 13, marginTop: 2, color: "#A5B4FC", fontWeight: "500" }}>
                 {subtitle}
               </Text>
             )}
           </View>
         </View>
         {rightElement || (showChevron && (
-          <IconSymbol name="chevron.right" size={20} color="#A5B4FC" />
+          <IconSymbol name="chevron.right" size={20} color="#A78BFA" />
         ))}
       </View>
     </Pressable>
@@ -84,23 +116,51 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground>
-      <ScreenContainer className="p-6">
+      <ScreenContainer style={{ paddingHorizontal: 16 }}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View className="flex-1 gap-6">
+          <View style={{ flex: 1, gap: 8 }}>
             {/* Header */}
-            <AnimatedCard delay={0} className="gap-2 mt-4 bg-transparent border-0">
-              <Text className="text-3xl font-bold" style={{ color: '#F8F9FF' }}>
-                Settings
+            <AnimatedCard delay={0} style={{ gap: 4, marginTop: 8, backgroundColor: "transparent", borderWidth: 0 }}>
+              <Text
+                style={{
+                  fontSize: 32,
+                  fontWeight: "800",
+                  color: "#E0E7FF",
+                  letterSpacing: 1,
+                  ...(Platform.OS === "web" && {
+                    textShadow: "0 0 20px rgba(167, 139, 250, 0.5)",
+                  }),
+                }}
+              >
+                SETTINGS
               </Text>
-              <Text className="text-base" style={{ color: '#A5B4FC' }}>
+              <Text style={{ fontSize: 14, color: "#A5B4FC", fontWeight: "500" }}>
                 Manage your account and preferences
               </Text>
             </AnimatedCard>
 
             {/* Account Section */}
-            <AnimatedCard delay={100} className="overflow-hidden">
-              <View className="px-6 py-4 border-b border-opacity-10" style={{ borderColor: '#6366F1' }}>
-                <Text className="text-sm font-bold uppercase tracking-wider" style={{ color: '#818CF8' }}>
+            <AnimatedCard delay={100} style={{ overflow: "hidden", marginTop: 12 }}>
+              <View
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  borderBottomWidth: 1.5,
+                  borderBottomColor: "rgba(167, 139, 250, 0.3)",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "700",
+                    letterSpacing: 1.2,
+                    color: "#A78BFA",
+                    textTransform: "uppercase",
+                    ...(Platform.OS === "web" && {
+                      textShadow: "0 0 8px rgba(167, 139, 250, 0.3)",
+                    }),
+                  }}
+                >
                   Account
                 </Text>
               </View>
@@ -125,9 +185,27 @@ export default function SettingsScreen() {
             </AnimatedCard>
 
             {/* Preferences Section */}
-            <AnimatedCard delay={200} className="overflow-hidden">
-              <View className="px-6 py-4 border-b border-opacity-10" style={{ borderColor: '#6366F1' }}>
-                <Text className="text-sm font-bold uppercase tracking-wider" style={{ color: '#818CF8' }}>
+            <AnimatedCard delay={200} style={{ overflow: "hidden" }}>
+              <View
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  borderBottomWidth: 1.5,
+                  borderBottomColor: "rgba(167, 139, 250, 0.3)",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "700",
+                    letterSpacing: 1.2,
+                    color: "#A78BFA",
+                    textTransform: "uppercase",
+                    ...(Platform.OS === "web" && {
+                      textShadow: "0 0 8px rgba(167, 139, 250, 0.3)",
+                    }),
+                  }}
+                >
                   Preferences
                 </Text>
               </View>
@@ -141,8 +219,11 @@ export default function SettingsScreen() {
                   <Switch
                     value={soundEnabled}
                     onValueChange={handleToggleSound}
-                    trackColor={{ false: '#374151', true: '#6366F1' }}
-                    thumbColor={soundEnabled ? '#F8F9FF' : '#9CA3AF'}
+                    trackColor={{
+                      false: "rgba(99, 102, 241, 0.2)",
+                      true: "rgba(167, 139, 250, 0.4)",
+                    }}
+                    thumbColor={soundEnabled ? "#A78BFA" : "#6B7280"}
                   />
                 }
               />
@@ -161,9 +242,27 @@ export default function SettingsScreen() {
             </AnimatedCard>
 
             {/* Support Section */}
-            <AnimatedCard delay={300} className="overflow-hidden">
-              <View className="px-6 py-4 border-b border-opacity-10" style={{ borderColor: '#6366F1' }}>
-                <Text className="text-sm font-bold uppercase tracking-wider" style={{ color: '#818CF8' }}>
+            <AnimatedCard delay={300} style={{ overflow: "hidden" }}>
+              <View
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  borderBottomWidth: 1.5,
+                  borderBottomColor: "rgba(167, 139, 250, 0.3)",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "700",
+                    letterSpacing: 1.2,
+                    color: "#A78BFA",
+                    textTransform: "uppercase",
+                    ...(Platform.OS === "web" && {
+                      textShadow: "0 0 8px rgba(167, 139, 250, 0.3)",
+                    }),
+                  }}
+                >
                   Support
                 </Text>
               </View>
@@ -188,38 +287,52 @@ export default function SettingsScreen() {
             </AnimatedCard>
 
             {/* Logout Button */}
-            <AnimatedCard delay={400} className="overflow-hidden">
-              <Pressable
-                onPress={handleLogout}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.7 : 1,
-                })}
-              >
-                <View className="flex-row items-center justify-center gap-3 py-4 px-6">
-                  <Text className="text-xl">🚪</Text>
-                  <Text className="text-base font-bold" style={{ color: '#EF4444' }}>
-                    Logout
-                  </Text>
-                </View>
-              </Pressable>
+            <AnimatedCard delay={400} style={{ overflow: "hidden" }}>
+              <View style={{ paddingHorizontal: 8, paddingVertical: 8 }}>
+                <NeonLiquidButton
+                  label="🚪 Logout"
+                  onPress={handleLogout}
+                  colors={["#EF4444", "#F87171"]}
+                  glowColor="#EF4444"
+                  variant="secondary"
+                />
+              </View>
             </AnimatedCard>
 
             {/* Powered by The Agency */}
-            <AnimatedCard delay={500} className="items-center gap-3 py-6 bg-transparent border-0">
-              <Text className="text-xs" style={{ color: '#6B7280' }}>
+            <AnimatedCard
+              delay={500}
+              style={{
+                alignItems: "center",
+                gap: 12,
+                paddingVertical: 24,
+                backgroundColor: "transparent",
+                borderWidth: 0,
+              }}
+            >
+              <Text style={{ fontSize: 12, color: "#8B5CF6", fontWeight: "500" }}>
                 Powered by
               </Text>
               <Image
-                source={{ uri: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663225968004/WB7b2UcQAmrXmfdF2KMFuk/the-agency-logo_80e00e33.png' }}
+                source={{
+                  uri: "https://d2xsxph8kpxj0f.cloudfront.net/310519663225968004/WB7b2UcQAmrXmfdF2KMFuk/the-agency-logo_80e00e33.png",
+                }}
                 style={{ width: 100, height: 66 }}
                 contentFit="contain"
               />
-              <Text className="text-xs text-center" style={{ color: '#4B5563' }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  textAlign: "center",
+                  color: "#8B5CF6",
+                  fontWeight: "500",
+                }}
+              >
                 Premium solutions for small businesses
               </Text>
             </AnimatedCard>
 
-            <View className="h-8" />
+            <View style={{ height: 20 }} />
           </View>
         </ScrollView>
       </ScreenContainer>

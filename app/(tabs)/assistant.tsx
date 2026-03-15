@@ -22,6 +22,8 @@ import Animated, {
 import { ScreenContainer } from "@/components/screen-container";
 import { GradientBackground } from "@/components/gradient-background";
 import { AnimatedCard } from "@/components/animated-card";
+import { GlassCard } from "@/components/glass-card";
+import { NeonLiquidButton } from "@/components/neon-liquid-button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useSubscription } from "@/lib/subscription-provider";
 import { bouncySpring } from "@/lib/animations";
@@ -81,6 +83,13 @@ function TypingDots() {
   const d2Style = useAnimatedStyle(() => ({ transform: [{ translateY: dot2.value }] }));
   const d3Style = useAnimatedStyle(() => ({ transform: [{ translateY: dot3.value }] }));
 
+  const dotStyle = Platform.OS === "web"
+    ? {
+        textShadow: "0 0 8px rgba(167, 139, 250, 0.8)",
+        boxShadow: "0 0 12px rgba(167, 139, 250, 0.6)",
+      }
+    : {};
+
   return (
     <View style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 8, paddingHorizontal: 4 }}>
       {[d1Style, d2Style, d3Style].map((style, i) => (
@@ -88,7 +97,13 @@ function TypingDots() {
           key={i}
           style={[
             style,
-            { width: 8, height: 8, borderRadius: 4, backgroundColor: "#818CF8" },
+            {
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: "#A78BFA",
+              ...dotStyle,
+            },
           ]}
         />
       ))}
@@ -105,6 +120,14 @@ function SuggestionChip({ label, onPress }: { label: string; onPress: () => void
     onPress();
   };
 
+  const glassStyle = Platform.OS === "web"
+    ? {
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow: "0 8px 32px rgba(129, 140, 248, 0.15)",
+      }
+    : {};
+
   return (
     <AnimatedPressable onPress={handlePress} style={animatedStyle}>
       <View
@@ -112,12 +135,13 @@ function SuggestionChip({ label, onPress }: { label: string; onPress: () => void
           paddingHorizontal: 14,
           paddingVertical: 8,
           borderRadius: 20,
-          backgroundColor: "rgba(30, 20, 60, 0.7)",
-          borderWidth: 1,
-          borderColor: "rgba(129, 140, 248, 0.35)",
+          backgroundColor: "rgba(129, 140, 248, 0.12)",
+          borderWidth: 1.5,
+          borderColor: "rgba(167, 139, 250, 0.5)",
+          ...glassStyle,
         }}
       >
-        <Text style={{ color: "#C7D2FE", fontSize: 13 }}>{label}</Text>
+        <Text style={{ color: "#E0E7FF", fontSize: 13, fontWeight: "600" }}>{label}</Text>
       </View>
     </AnimatedPressable>
   );
@@ -126,24 +150,21 @@ function SuggestionChip({ label, onPress }: { label: string; onPress: () => void
 function ActionButton({ action, onPress }: { action: Message["action"]; onPress: () => void }) {
   if (!action || action.type === "none") return null;
 
-  const config: Record<string, { label: string; bg: string; border: string; color: string }> = {
+  const config: Record<string, { label: string; colors: string[]; glowColor: string }> = {
     navigate_create: {
       label: "✨ Create This Promo",
-      bg: "rgba(129, 140, 248, 0.2)",
-      border: "rgba(129, 140, 248, 0.5)",
-      color: "#C7D2FE",
+      colors: ["#818CF8", "#A78BFA"],
+      glowColor: "#818CF8",
     },
     navigate_analytics: {
       label: "📊 View Analytics",
-      bg: "rgba(52, 211, 153, 0.15)",
-      border: "rgba(52, 211, 153, 0.4)",
-      color: "#6EE7B7",
+      colors: ["#34D399", "#10B981"],
+      glowColor: "#34D399",
     },
     navigate_upgrade: {
       label: "👑 Upgrade Now",
-      bg: "rgba(251, 191, 36, 0.15)",
-      border: "rgba(251, 191, 36, 0.4)",
-      color: "#FCD34D",
+      colors: ["#F59E0B", "#FBBF24"],
+      glowColor: "#F59E0B",
     },
   };
 
@@ -151,24 +172,16 @@ function ActionButton({ action, onPress }: { action: Message["action"]; onPress:
   if (!c) return null;
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1, marginTop: 10 })}
-    >
-      <View
-        style={{
-          paddingVertical: 10,
-          paddingHorizontal: 16,
-          borderRadius: 14,
-          alignItems: "center",
-          backgroundColor: c.bg,
-          borderWidth: 1,
-          borderColor: c.border,
-        }}
-      >
-        <Text style={{ fontSize: 13, fontWeight: "700", color: c.color }}>{c.label}</Text>
-      </View>
-    </Pressable>
+    <View style={{ marginTop: 10 }}>
+      <NeonLiquidButton
+        label={c.label}
+        onPress={onPress}
+        colors={c.colors}
+        glowColor={c.glowColor}
+        variant="secondary"
+        size="sm"
+      />
+    </View>
   );
 }
 
@@ -264,62 +277,81 @@ export default function AssistantScreen() {
     }
   };
 
-  const renderMessage = ({ item }: { item: Message }) => (
-    <View style={{ marginBottom: 16, alignItems: item.isUser ? "flex-end" : "flex-start" }}>
-      {!item.isUser && (
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-          <View
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              backgroundColor: "rgba(129, 140, 248, 0.2)",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ fontSize: 13 }}>🤖</Text>
+  const renderMessage = ({ item }: { item: Message }) => {
+    const glassStyle = Platform.OS === "web"
+      ? {
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }
+      : {};
+
+    return (
+      <View style={{ marginBottom: 16, alignItems: item.isUser ? "flex-end" : "flex-start" }}>
+        {!item.isUser && (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                backgroundColor: "rgba(167, 139, 250, 0.25)",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: 1,
+                borderColor: "rgba(167, 139, 250, 0.4)",
+              }}
+            >
+              <Text style={{ fontSize: 13 }}>🤖</Text>
+            </View>
+            <Text style={{ fontSize: 11, color: "#A78BFA", fontWeight: "600" }}>Promo</Text>
           </View>
-          <Text style={{ fontSize: 11, color: "#6B7280" }}>Promo</Text>
+        )}
+
+        <View
+          style={{
+            maxWidth: "83%",
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            borderRadius: 20,
+            backgroundColor: item.isUser
+              ? "rgba(129, 140, 248, 0.25)"
+              : "rgba(99, 102, 241, 0.1)",
+            borderWidth: 1.5,
+            borderColor: item.isUser
+              ? "rgba(167, 139, 250, 0.6)"
+              : "rgba(167, 139, 250, 0.35)",
+            ...glassStyle,
+            ...(Platform.OS === "web" && {
+              boxShadow: item.isUser
+                ? "0 8px 32px rgba(129, 140, 248, 0.2)"
+                : "0 8px 32px rgba(167, 139, 250, 0.1)",
+            }),
+          }}
+        >
+          <Text style={{ color: "#F8F9FF", fontSize: 14, lineHeight: 21, fontWeight: "500" }}>
+            {item.text}
+          </Text>
+
+          {!item.isUser && item.action && item.action.type !== "none" && (
+            <ActionButton action={item.action} onPress={() => executeAction(item.action)} />
+          )}
         </View>
-      )}
 
-      <View
-        style={{
-          maxWidth: "83%",
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-          borderRadius: 20,
-          backgroundColor: item.isUser
-            ? "rgba(129, 140, 248, 0.3)"
-            : "rgba(30, 20, 60, 0.75)",
-          borderWidth: 1,
-          borderColor: item.isUser
-            ? "rgba(129, 140, 248, 0.5)"
-            : "rgba(129, 140, 248, 0.18)",
-        }}
-      >
-        <Text style={{ color: "#F8F9FF", fontSize: 14, lineHeight: 21 }}>{item.text}</Text>
-
-        {!item.isUser && item.action && item.action.type !== "none" && (
-          <ActionButton action={item.action} onPress={() => executeAction(item.action)} />
+        {!item.isUser && item.suggestions && item.suggestions.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 8 }}
+            contentContainerStyle={{ gap: 8, paddingRight: 8 }}
+          >
+            {item.suggestions.map((s, i) => (
+              <SuggestionChip key={i} label={s} onPress={() => sendMessage(s)} />
+            ))}
+          </ScrollView>
         )}
       </View>
-
-      {!item.isUser && item.suggestions && item.suggestions.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ marginTop: 8 }}
-          contentContainerStyle={{ gap: 8, paddingRight: 8 }}
-        >
-          {item.suggestions.map((s, i) => (
-            <SuggestionChip key={i} label={s} onPress={() => sendMessage(s)} />
-          ))}
-        </ScrollView>
-      )}
-    </View>
-  );
+    );
+  };
 
   return (
     <GradientBackground>
@@ -339,24 +371,46 @@ export default function AssistantScreen() {
                       width: 44,
                       height: 44,
                       borderRadius: 22,
-                      backgroundColor: "rgba(129, 140, 248, 0.2)",
+                      backgroundColor: "rgba(245, 158, 11, 0.15)",
                       alignItems: "center",
                       justifyContent: "center",
-                      borderWidth: 1,
-                      borderColor: "rgba(129, 140, 248, 0.35)",
+                      borderWidth: 1.5,
+                      borderColor: "rgba(245, 158, 11, 0.5)",
+                      ...(Platform.OS === "web" && {
+                        boxShadow: "0 0 20px rgba(245, 158, 11, 0.3)",
+                      }),
                     }}
                   >
                     <Text style={{ fontSize: 22 }}>🤖</Text>
                   </View>
                   <View>
-                    <Text style={{ color: "#F8F9FF", fontSize: 20, fontWeight: "700" }}>
-                      Promo Assistant
+                    <Text
+                      style={{
+                        color: "#FCD34D",
+                        fontSize: 20,
+                        fontWeight: "800",
+                        letterSpacing: 1.2,
+                        ...(Platform.OS === "web" && {
+                          textShadow: "0 0 16px rgba(245, 158, 11, 0.6)",
+                        }),
+                      }}
+                    >
+                      AI ASSISTANT
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: 2 }}>
-                      <View
-                        style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#34D399" }}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4 }}>
+                      <Animated.View
+                        style={{
+                          width: 7,
+                          height: 7,
+                          borderRadius: 4,
+                          backgroundColor: "#34D399",
+                          ...(Platform.OS === "web" && {
+                            boxShadow: "0 0 12px rgba(52, 211, 153, 0.8)",
+                          }),
+                          animation: Platform.OS === "web" ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : undefined,
+                        }}
                       />
-                      <Text style={{ color: "#34D399", fontSize: 12 }}>
+                      <Text style={{ color: "#34D399", fontSize: 12, fontWeight: "600" }}>
                         Online · AI-powered
                       </Text>
                     </View>
@@ -382,9 +436,11 @@ export default function AssistantScreen() {
                           width: 24,
                           height: 24,
                           borderRadius: 12,
-                          backgroundColor: "rgba(129, 140, 248, 0.2)",
+                          backgroundColor: "rgba(167, 139, 250, 0.25)",
                           alignItems: "center",
                           justifyContent: "center",
+                          borderWidth: 1,
+                          borderColor: "rgba(167, 139, 250, 0.4)",
                         }}
                       >
                         <Text style={{ fontSize: 13 }}>🤖</Text>
@@ -395,9 +451,14 @@ export default function AssistantScreen() {
                         paddingHorizontal: 16,
                         paddingVertical: 8,
                         borderRadius: 20,
-                        backgroundColor: "rgba(30, 20, 60, 0.75)",
-                        borderWidth: 1,
-                        borderColor: "rgba(129, 140, 248, 0.18)",
+                        backgroundColor: "rgba(99, 102, 241, 0.1)",
+                        borderWidth: 1.5,
+                        borderColor: "rgba(167, 139, 250, 0.35)",
+                        ...(Platform.OS === "web" && {
+                          backdropFilter: "blur(16px)",
+                          WebkitBackdropFilter: "blur(16px)",
+                          boxShadow: "0 8px 32px rgba(167, 139, 250, 0.1)",
+                        }),
                       }}
                     >
                       <TypingDots />
@@ -416,47 +477,43 @@ export default function AssistantScreen() {
                 flexDirection: "row",
                 alignItems: "flex-end",
                 gap: 10,
-                borderRadius: 22,
-                backgroundColor: "rgba(40, 30, 80, 0.9)",
-                borderWidth: 1,
-                borderColor: "rgba(129, 140, 248, 0.4)",
+                borderRadius: 24,
+                backgroundColor: "rgba(99, 102, 241, 0.08)",
+                borderWidth: 1.5,
+                borderColor: "rgba(167, 139, 250, 0.4)",
+                ...(Platform.OS === "web" && {
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  boxShadow: "0 8px 32px rgba(129, 140, 248, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)",
+                }),
               }}
             >
               <TextInput
                 value={inputText}
                 onChangeText={setInputText}
                 placeholder="Ask me anything about your marketing..."
-                placeholderTextColor="#6B7280"
-                style={{ flex: 1, color: "#F8F9FF", fontSize: 14, maxHeight: 100 }}
+                placeholderTextColor="#8B5CF6"
+                style={{
+                  flex: 1,
+                  color: "#F8F9FF",
+                  fontSize: 14,
+                  maxHeight: 100,
+                  fontWeight: "500",
+                }}
                 multiline
                 maxLength={500}
                 editable={!isTyping}
                 onSubmitEditing={() => sendMessage(inputText)}
               />
-              <Pressable
+              <NeonLiquidButton
+                label=""
                 onPress={() => sendMessage(inputText)}
                 disabled={!inputText.trim() || isTyping}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.7 : !inputText.trim() || isTyping ? 0.35 : 1,
-                })}
-              >
-                <View
-                  style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 19,
-                    backgroundColor: "#818CF8",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {isTyping ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <IconSymbol name="paperplane.fill" size={16} color="#fff" />
-                  )}
-                </View>
-              </Pressable>
+                colors={["#818CF8", "#A78BFA"]}
+                glowColor="#818CF8"
+                size="sm"
+                icon={isTyping ? undefined : "paperplane.fill"}
+              />
             </View>
           </View>
         </KeyboardAvoidingView>
