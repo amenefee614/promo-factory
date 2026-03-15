@@ -5,7 +5,7 @@
     "buildCommand": "mkdir -p node_modules/react-native-css-interop/.cache && touch node_modules/react-native-css-interop/.cache/web.css && npx expo export --platform web && pnpm run build"
   },
   "deploy": {
-    "startCommand": "pnpm run db:push; NODE_ENV=production node dist/index.js",
+    "startCommand": "pnpm run db:push; NODE_ENV=production node dist/index.mjs",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
